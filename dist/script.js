@@ -49,6 +49,7 @@ for(let i = 0; i < buttons.length; i++){
                 }
                 else if(buttonVal === "AC"){
                     //inibc
+                    finalVal = "";
                     document.getElementById("input").value = "";
                 }
                 else{
@@ -62,7 +63,7 @@ for(let i = 0; i < buttons.length; i++){
                         // console.log(calculatedVal);
                         document.getElementById("input").value = calculatedVal;
                         // calculatedVal = submittedVal;
-                        finalVal = "";
+                        finalVal = calculatedVal;
                     }
                     
                 }
