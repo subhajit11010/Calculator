@@ -1,3 +1,4 @@
+
 document.getElementById("input").addEventListener('keydown', checkInput);
 function checkInput(e){
     const key = e.key;
@@ -209,3 +210,10 @@ function checkIndexAndCalc(submittedVal, index){
     console.log(submittedVal);
     return submittedVal;
 }
+
+
+
+
+// function getData(){
+
+// }
