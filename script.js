@@ -88,6 +88,7 @@ for(let i = 0; i < buttons.length; i++){
             else prevButtonVal = buttonVal;
            
         }
+        input.scrollLeft = input.scrollWidth;
     });
 }
 
