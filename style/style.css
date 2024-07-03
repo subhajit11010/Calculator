@@ -116,12 +116,14 @@ hr{
     #calculator-display{
         width: 90%;
         padding: 10% 0 3% 0;
+        height: 70%;
     }
 }
 @media (min-width: 401px) and (max-width: 580px) {
     #calculator-display{
         width: 75%;
         padding: 5% 0 3% 0;
+        height: 75%;
     }
     
 }
