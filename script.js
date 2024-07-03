@@ -40,7 +40,7 @@ for(let i = 0; i < buttons.length; i++){
             // console.log(buttonVal);
             if(!(buttonVal === "DEL" || buttonVal === "CALC" || buttonVal === "AC")){
                 
-                if(buttonVals.includes(buttonVal)){
+                if(buttonVals.includes(buttonVal) || buttonVal === "%"){
                     if(prevButtonVal !== buttonVal){
                         document.getElementById("input").value += buttonVal;
                         finalVal += buttonVal;
@@ -50,7 +50,7 @@ for(let i = 0; i < buttons.length; i++){
                     document.getElementById("input").value += buttonVal;
                     finalVal += buttonVal;
                 }
-            }   
+            }
             else{
                 if(buttonVal === "DEL"){
                     //vbgru
@@ -72,12 +72,21 @@ for(let i = 0; i < buttons.length; i++){
                         }
                         else{
                             finalVal = finalVal.split('');
-                            console.log(finalVal);
+                            // console.log(finalVal);
                             calculatedVal = calculateVal(finalVal);
+                            if(calculatedVal === "Error!"){
+                                finalVal = finalVal.join('');
+                                // finalVal = finalVal;
+                                displayWarning("Error!");
+                            }
+                            else {
+                                document.getElementById("input").value = calculatedVal;
+                                finalVal = calculatedVal;
+                            }
                             // console.log(calculatedVal);
-                            document.getElementById("input").value = calculatedVal;
+                            // document.getElementById("input").value = calculatedVal;
                             // calculatedVal = submittedVal;
-                            finalVal = calculatedVal;
+                            
                         }
                     }
                 }
@@ -96,30 +105,45 @@ function calculateVal(submittedVal){
     if(submittedVal.includes("%")){
         var index = submittedVal.indexOf("%");
         submittedVal = checkIndexAndCalc(submittedVal, index);
-        calculateVal(submittedVal);
+        if(submittedVal === "Error!"){
+            return submittedVal;
+        }
+        else calculateVal(submittedVal);
     }
     else{
         if(submittedVal.includes("*") && submittedVal.includes("/")){
             if(submittedVal.indexOf("*") < submittedVal.indexOf("/")){
                 var index = submittedVal.indexOf("*");
                 submittedVal = checkIndexAndCalc(submittedVal, index);
-                calculateVal(submittedVal);
+                if(submittedVal === "Error!"){
+                    return submittedVal;
+                }
+                else calculateVal(submittedVal);
             }
             else{
                 var index = submittedVal.indexOf("/");
                 submittedVal = checkIndexAndCalc(submittedVal, index);
-                calculateVal(submittedVal);
+                if(submittedVal === "Error!"){
+                    return submittedVal;
+                }
+                else calculateVal(submittedVal);
             }
         }
         else if(submittedVal.includes("*")){
             var index = submittedVal.indexOf("*");
             submittedVal = checkIndexAndCalc(submittedVal, index);
-            calculateVal(submittedVal);
+            if(submittedVal === "Error!"){
+                return submittedVal;
+            }
+            else calculateVal(submittedVal);
         }
         else if(submittedVal.includes("/")){
             var index = submittedVal.indexOf("/");
             submittedVal = checkIndexAndCalc(submittedVal, index);    
-            calculateVal(submittedVal);
+            if(submittedVal === "Error!"){
+                return submittedVal;
+            }
+            else calculateVal(submittedVal);
         }
         else{
             if(submittedVal.includes("+") && submittedVal.includes("-")){
@@ -156,102 +180,120 @@ function calculateVal(submittedVal){
 }
 
 function checkIndexAndCalc(submittedVal, index){
-    var lIndex, rIndex, length = submittedVal.length;
+    const length = submittedVal.length;
+    var status = true;
+    for(let i = 0; i < length; i++){
+        if(buttonVals.includes(submittedVal[i]) || submittedVal[i] === "%"){
+            // const s = submittedVal[i];
+            for (j in buttonVals){
+                if(buttonVals[j] === submittedVal[i-1]){
+                    status = false;
+                }
+            }
+        }
+    }
+    // console.log(submittedVal);
+    var lIndex, rIndex;
     var lhVal, rhVal, calcVal;
     const operator = submittedVal[index];
-    for(let i = index-1; i >= 0; i--){
-        if(submittedVal[i] === "+" || submittedVal[i] === "-" || submittedVal[i] === "*" || submittedVal[i] === "/" || submittedVal[i] === "%"){
-            lIndex = i;
-            break;
-        }
-    }
-    if(lIndex === undefined){
-        lIndex = 0;
-    }
-    for(let i = index+1; i < length; i++){
-        if(submittedVal[i] === "+" || submittedVal[i] === "-" || submittedVal[i] === "*" || submittedVal[i] === "/" || submittedVal[i] === "%"){
-            rIndex = i;
-            break;
-        }
-    }
-    if(rIndex === undefined){
-        rIndex = length-1;
-    }
-    if(lIndex === 0 && rIndex === length-1){
-        lhVal = Number((submittedVal.slice(lIndex, index)).join(''));
-        rhVal = Number((submittedVal.slice(index+1, rIndex+1)).join(''));
-    }
-    else if(lIndex === 0){
-        lhVal = Number((submittedVal.slice(lIndex, index)).join(''));
-        rhVal = Number((submittedVal.slice(index+1, rIndex)).join(''));
-    }
-    else if(rIndex === length-1){
-        lhVal = Number((submittedVal.slice(lIndex+1, index)).join(''));
-        rhVal = Number((submittedVal.slice(index+1, rIndex+1)).join(''));
-    }
-    else{
-        lhVal = Number((submittedVal.slice(lIndex+1, index)).join(''));
-        rhVal = Number((submittedVal.slice(index+1, rIndex)).join(''));
-    }
-    
-    switch(operator){
-        case "+": 
-            calcVal = String(lhVal + rhVal);
-            break;
-        case "-":
-            calcVal = String(lhVal - rhVal);
-            break;
-        case "/":
-            if(rhVal === 0){
-                return "Error";
+    if(status){
+        for(let i = index-1; i >= 0; i--){
+            if(submittedVal[i] === "+" || submittedVal[i] === "-" || submittedVal[i] === "*" || submittedVal[i] === "/" || submittedVal[i] === "%"){
+                lIndex = i;
+                break;
             }
-            else calcVal = String(lhVal / rhVal);
-            break;
-        case "*":
-            calcVal = String(lhVal * rhVal);
-            break;
-        case "%":
-            calcVal = String(lhVal / 100);
-    }
-    console.log(lIndex, rIndex, lhVal, rhVal, calcVal);
-    // console.log(submittedVal);
-    if(lIndex === 0){
-        submittedVal[lIndex] = calcVal;
-    }
-    else submittedVal[lIndex+1] = calcVal;
-    // console.log(submittedVal);
-    var delCount;
-    if(operator === "%"){
-        if(lIndex === 0){
-            delCount = index - lIndex;
-            submittedVal.splice(lIndex+1, delCount);
         }
-        else{
-            delCount = index - lIndex - 1;
-            submittedVal.splice(lIndex+2, delCount);
+        if(lIndex === undefined){
+            lIndex = 0;
         }
-    }
-    else{
+        for(let i = index+1; i < length; i++){
+            if(submittedVal[i] === "+" || submittedVal[i] === "-" || submittedVal[i] === "*" || submittedVal[i] === "/" || submittedVal[i] === "%"){
+                // if()
+                rIndex = i;
+                break;
+            }
+        }
+        if(rIndex === undefined){
+            rIndex = length-1;
+        }
         if(lIndex === 0 && rIndex === length-1){
-            delCount = rIndex - lIndex;
-            submittedVal.splice(lIndex+1, delCount);
+            lhVal = Number((submittedVal.slice(lIndex, index)).join(''));
+            rhVal = Number((submittedVal.slice(index+1, rIndex+1)).join(''));
         }
         else if(lIndex === 0){
-            delCount = rIndex - lIndex - 1;
-            submittedVal.splice(lIndex+1, delCount);
+            lhVal = Number((submittedVal.slice(lIndex, index)).join(''));
+            rhVal = Number((submittedVal.slice(index+1, rIndex)).join(''));
         }
         else if(rIndex === length-1){
-            delCount = rIndex - lIndex - 1;
-            submittedVal.splice(lIndex+2, delCount);
+            lhVal = Number((submittedVal.slice(lIndex+1, index)).join(''));
+            rhVal = Number((submittedVal.slice(index+1, rIndex+1)).join(''));
         }
-        else {
-            delCount = rIndex - lIndex + 2;
-            submittedVal.splice(lIndex+2, delCount);
+        else{
+            lhVal = Number((submittedVal.slice(lIndex+1, index)).join(''));
+            rhVal = Number((submittedVal.slice(index+1, rIndex)).join(''));
         }
+        
+        switch(operator){
+            case "+": 
+                calcVal = String(lhVal + rhVal);
+                break;
+            case "-":
+                calcVal = String(lhVal - rhVal);
+                break;
+            case "/":
+                if(rhVal === 0){
+                    return "Error";
+                }
+                else calcVal = String(lhVal / rhVal);
+                break;
+            case "*":
+                calcVal = String(lhVal * rhVal);
+                break;
+            case "%":
+                calcVal = String(lhVal / 100);
+        }
+        console.log(lIndex, rIndex, lhVal, rhVal, calcVal);
+        // console.log(submittedVal);
+        if(lIndex === 0){
+            submittedVal[lIndex] = calcVal;
+        }
+        else submittedVal[lIndex+1] = calcVal;
+        console.log(submittedVal);
+        var delCount;
+        if(operator === "%"){
+            if(lIndex === 0){
+                delCount = index - lIndex;
+                submittedVal.splice(lIndex+1, delCount);
+            }
+            else{
+                delCount = index - lIndex - 1;
+                submittedVal.splice(lIndex+2, delCount);
+            }
+        }
+        else{
+            if(lIndex === 0 && rIndex === length-1){
+                delCount = rIndex - lIndex;
+                submittedVal.splice(lIndex+1, delCount);
+            }
+            else if(lIndex === 0){
+                delCount = rIndex - lIndex - 1;
+                submittedVal.splice(lIndex+1, delCount);
+            }
+            else if(rIndex === length-1){
+                delCount = rIndex - lIndex - 1;
+                submittedVal.splice(lIndex+2, delCount);
+            }
+            else {
+                delCount = rIndex - lIndex + 2;
+                submittedVal.splice(lIndex+2, delCount);
+            }
+        }
+        
+        console.log(submittedVal);
+        return submittedVal;
     }
+    else return "Error!";
     
-    console.log(submittedVal);
-    return submittedVal;
 }
 
 
