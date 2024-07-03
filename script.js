@@ -17,12 +17,22 @@ function clearMsg(){
 }
 var lhVal = 0, rhVal = 0;
 var calculatedVal, finalVal = "";
-const buttonVals = "+-/*%"
+const buttonVals = "+-/*"
 var prevButtonVal;
-const buttons = document.getElementsByClassName("button")
+var input = document.getElementById("input");
+input.addEventListener("input", () => {
+    console.log('Current scrollLeft:', input.scrollLeft);
+    console.log('Current scrollWidth:', input.scrollWidth);
+    input.scrollLeft = input.scrollWidth;
+    console.log('Updated scrollLeft:', input.scrollLeft);
+});
+
+const buttons = document.getElementsByClassName("button");
 for(let i = 0; i < buttons.length; i++){
 
     buttons[i].addEventListener("click", () => {
+        input.scrollLeft = input.scrollWidth;
+        console.log('Updated scrollLeft:', input.scrollLeft);
         if(buttons[i].textContent !== undefined){
             
             var buttonVal = buttons[i].value;
@@ -53,77 +63,93 @@ for(let i = 0; i < buttons.length; i++){
                     document.getElementById("input").value = "";
                 }
                 else{
-                    if(buttonVals.includes(prevButtonVal) || prevButtonVal === "." || prevButtonVal === "0"){
+                    if(finalVal[0] === "/" || finalVal[0] === "*" || finalVal[0] === "%"){
                         displayWarning("Error!");
                     }
                     else{
-                        finalVal = finalVal.split('');
-                        console.log(finalVal);
-                        calculatedVal = calculateVal(finalVal);
-                        // console.log(calculatedVal);
-                        document.getElementById("input").value = calculatedVal;
-                        // calculatedVal = submittedVal;
-                        finalVal = calculatedVal;
+                        if(buttonVals.includes(prevButtonVal) || prevButtonVal === "." || prevButtonVal === "0"){
+                            displayWarning("Error!");
+                        }
+                        else{
+                            finalVal = finalVal.split('');
+                            console.log(finalVal);
+                            calculatedVal = calculateVal(finalVal);
+                            // console.log(calculatedVal);
+                            document.getElementById("input").value = calculatedVal;
+                            // calculatedVal = submittedVal;
+                            finalVal = calculatedVal;
+                        }
                     }
-                    
                 }
             }
-            prevButtonVal = buttonVal;
+            if((buttonVals.includes(prevButtonVal) || prevButtonVal === "." || prevButtonVal === "0") && buttonVal === "CALC"){
+                prevButtonVal = prevButtonVal;
+            }
+            else prevButtonVal = buttonVal;
+           
         }
     });
 }
 
 function calculateVal(submittedVal){
-    if(submittedVal.includes("*") && submittedVal.includes("/")){
-        if(submittedVal.indexOf("*") < submittedVal.indexOf("/")){
-            var index = submittedVal.indexOf("*");
-            submittedVal = checkIndexAndCalc(submittedVal, index);
-            calculateVal(submittedVal);
-        }
-        else{
-            var index = submittedVal.indexOf("/");
-            submittedVal = checkIndexAndCalc(submittedVal, index);
-            calculateVal(submittedVal);
-        }
-    }
-    else if(submittedVal.includes("*")){
-        var index = submittedVal.indexOf("*");
+    if(submittedVal.includes("%")){
+        var index = submittedVal.indexOf("%");
         submittedVal = checkIndexAndCalc(submittedVal, index);
         calculateVal(submittedVal);
     }
-    else if(submittedVal.includes("/")){
-        var index = submittedVal.indexOf("/");
-        submittedVal = checkIndexAndCalc(submittedVal, index);    
-        calculateVal(submittedVal);
-    }
     else{
-        if(submittedVal.includes("+") && submittedVal.includes("-")){
-            if(submittedVal.indexOf("+") < submittedVal.indexOf("-")){
-                var index = submittedVal.indexOf("+");
+        if(submittedVal.includes("*") && submittedVal.includes("/")){
+            if(submittedVal.indexOf("*") < submittedVal.indexOf("/")){
+                var index = submittedVal.indexOf("*");
                 submittedVal = checkIndexAndCalc(submittedVal, index);
                 calculateVal(submittedVal);
             }
             else{
-                var index = submittedVal.indexOf("-");
+                var index = submittedVal.indexOf("/");
                 submittedVal = checkIndexAndCalc(submittedVal, index);
                 calculateVal(submittedVal);
             }
         }
-        else if(submittedVal.includes("+")){
-            var index = submittedVal.indexOf("+");
-            // console.log(index);
+        else if(submittedVal.includes("*")){
+            var index = submittedVal.indexOf("*");
             submittedVal = checkIndexAndCalc(submittedVal, index);
-            console.log(submittedVal);
             calculateVal(submittedVal);
         }
-        else if(submittedVal.includes("-")){
-            var index = submittedVal.indexOf("-");
-            console.log(submittedVal);
-            submittedVal = checkIndexAndCalc(submittedVal, index);
-            console.log(submittedVal,index);
+        else if(submittedVal.includes("/")){
+            var index = submittedVal.indexOf("/");
+            submittedVal = checkIndexAndCalc(submittedVal, index);    
             calculateVal(submittedVal);
+        }
+        else{
+            if(submittedVal.includes("+") && submittedVal.includes("-")){
+                if(submittedVal.indexOf("+") < submittedVal.indexOf("-")){
+                    var index = submittedVal.indexOf("+");
+                    submittedVal = checkIndexAndCalc(submittedVal, index);
+                    calculateVal(submittedVal);
+                }
+                else{
+                    var index = submittedVal.indexOf("-");
+                    submittedVal = checkIndexAndCalc(submittedVal, index);
+                    calculateVal(submittedVal);
+                }
+            }
+            else if(submittedVal.includes("+")){
+                var index = submittedVal.indexOf("+");
+                // console.log(index);
+                submittedVal = checkIndexAndCalc(submittedVal, index);
+                console.log(submittedVal);
+                calculateVal(submittedVal);
+            }
+            else if(submittedVal.includes("-")){
+                var index = submittedVal.indexOf("-");
+                console.log(submittedVal);
+                submittedVal = checkIndexAndCalc(submittedVal, index);
+                console.log(submittedVal,index);
+                calculateVal(submittedVal);
+            }
         }
     }
+    
     submittedVal = submittedVal.join('');
     return submittedVal;
 }
@@ -183,6 +209,8 @@ function checkIndexAndCalc(submittedVal, index){
         case "*":
             calcVal = String(lhVal * rhVal);
             break;
+        case "%":
+            calcVal = String(lhVal / 100);
     }
     console.log(lIndex, rIndex, lhVal, rhVal, calcVal);
     // console.log(submittedVal);
@@ -192,22 +220,35 @@ function checkIndexAndCalc(submittedVal, index){
     else submittedVal[lIndex+1] = calcVal;
     // console.log(submittedVal);
     var delCount;
-    if(lIndex === 0 && rIndex === length-1){
-        delCount = rIndex - lIndex;
-        submittedVal.splice(lIndex+1, delCount);
+    if(operator === "%"){
+        if(lIndex === 0){
+            delCount = index - lIndex;
+            submittedVal.splice(lIndex+1, delCount);
+        }
+        else{
+            delCount = index - lIndex - 1;
+            submittedVal.splice(lIndex+2, delCount);
+        }
     }
-    else if(lIndex === 0){
-        delCount = rIndex - lIndex - 1;
-        submittedVal.splice(lIndex+1, delCount);
+    else{
+        if(lIndex === 0 && rIndex === length-1){
+            delCount = rIndex - lIndex;
+            submittedVal.splice(lIndex+1, delCount);
+        }
+        else if(lIndex === 0){
+            delCount = rIndex - lIndex - 1;
+            submittedVal.splice(lIndex+1, delCount);
+        }
+        else if(rIndex === length-1){
+            delCount = rIndex - lIndex - 1;
+            submittedVal.splice(lIndex+2, delCount);
+        }
+        else {
+            delCount = rIndex - lIndex + 2;
+            submittedVal.splice(lIndex+2, delCount);
+        }
     }
-    else if(rIndex === length-1){
-        delCount = rIndex - lIndex - 1;
-        submittedVal.splice(lIndex+2, delCount);
-    }
-    else {
-        delCount = rIndex - lIndex + 2;
-        submittedVal.splice(lIndex+2, delCount);
-    }
+    
     console.log(submittedVal);
     return submittedVal;
 }

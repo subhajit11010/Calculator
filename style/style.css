@@ -14,6 +14,9 @@
 }
 #warning{
     padding: 2rem;
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: "VT323", sans-serif; 
 }
 #calculator-display{
     height: 90%;
@@ -36,7 +39,8 @@
     font-family: "VT323", sans-serif;
     background-color: rgb(153, 152, 152);
     cursor: default;
-    color: rgb(0, 0, 0)
+    color: rgb(0, 0, 0);
+    /* overflow-x: scroll; */
 }
 
 #form-container{
@@ -51,6 +55,7 @@
     padding: 0.3rem;
     background-color: rgb(153, 152, 152);
     /* box-shadow: inset 1px 2px 5px 10px black; */
+    
 }
 #buttons-container{
     height: 100%;
