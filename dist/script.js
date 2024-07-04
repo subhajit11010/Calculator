@@ -66,7 +66,7 @@ for(let i = 0; i < buttons.length; i++){
                         displayWarning("Error!");
                     }
                     else{
-                        if(buttonVals.includes(prevButtonVal) || prevButtonVal === "." || prevButtonVal === "0"){
+                        if(buttonVals.includes(prevButtonVal) || prevButtonVal === "."){
                             displayWarning("Error!");
                         }
                         else{
@@ -241,7 +241,7 @@ function checkIndexAndCalc(submittedVal, index){
                 break;
             case "/":
                 if(rhVal === 0){
-                    return "Error";
+                    return "Error!";
                 }
                 else calcVal = String(lhVal / rhVal);
                 break;
